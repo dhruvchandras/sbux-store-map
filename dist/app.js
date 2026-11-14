@@ -91,7 +91,7 @@ function renderGroups() {
 function updateMap() {
   const activeRows = rows.filter(r => selected.has(r[0]));
   window.atlasMap.setData(activeRows,colors);
-  get("map-sub").textContent = format(activeRows.length) + " locations Â· " + selected.size + (selected.size === 1 ? " company" : " companies");
+  get("map-sub").textContent = format(activeRows.length) + " locations \u00b7 " + selected.size + (selected.size === 1 ? " company" : " companies");
   get("selected").textContent = selected.size + " of " + brands.length + " selected";
   get("toggleAll").textContent = selected.size === brands.length ? "Clear all" : "Select all";
 }
@@ -120,7 +120,7 @@ for (const brand of brands) {
   const item = make("li");
   const link = make("a",brand);
   link.href = s.url; link.target = "_blank"; link.rel = "noopener";
-  item.append(link,document.createTextNode(" Â· " + s.label + " Â· " + s.date));
+  item.append(link,document.createTextNode(" \u00b7 " + s.label + " \u00b7 " + s.date));
   list.append(item);
 }
 details.append(list,make("h3","Map geography"),make("p","State boundaries from the U.S. Census Bureau. Surrounding geography from Natural Earth. Alaska and Hawaii are shown as insets."));
