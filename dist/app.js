@@ -40,7 +40,35 @@ function renderGroups() {
     const matching = list.filter(b => b.toLowerCase().includes(query));
     if (!matching.length) continue;
     const group = make("section",null,"group");
-    group.append(make("h3",title));
+    const heading = make("h3",title);
+    group.append(heading);
+    let groupToggle;
+    function syncGroupToggle() {
+      if (!groupToggle) return;
+      const count = list.filter(brand => selected.has(brand)).length;
+      groupToggle.checked = count === list.length;
+      groupToggle.indeterminate = count > 0 && count < list.length;
+    }
+    if (title === "Medium" || title === "Small") {
+      const label = make("label","All","group-toggle");
+      groupToggle = make("input",null);
+      groupToggle.type = "checkbox";
+      groupToggle.setAttribute("aria-label","All " + title + " competitors");
+      label.append(groupToggle);
+      heading.append(label);
+      syncGroupToggle();
+      groupToggle.onchange = () => {
+        const show = groupToggle.checked;
+        for (const brand of list) {
+          if (show) selected.add(brand); else selected.delete(brand);
+        }
+        for (const button of group.querySelectorAll(".brand")) {
+          button.setAttribute("aria-checked",show);
+        }
+        syncGroupToggle();
+        updateMap();
+      };
+    }
     for (const brand of matching) {
       const button = make("button",null,"brand");
       button.setAttribute("role","switch");
@@ -51,6 +79,7 @@ function renderGroups() {
       button.onclick = () => {
         if (selected.has(brand)) selected.delete(brand); else selected.add(brand);
         button.setAttribute("aria-checked",selected.has(brand));
+        syncGroupToggle();
         updateMap();
       };
       group.append(button);
