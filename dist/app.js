@@ -19,10 +19,24 @@ const sections = [
     size, competitors.filter(brand => sizeGroup(byBrand.get(brand).length) === size)
   ])
 ];
-const colors = {"McDonald's":"#FFC72C","Starbucks":"#176648","Dunkin'":"#DA1884","Dutch Bros Coffee":"#286d9e","7 Brew Coffee":"#ae4359","Scooter's Coffee":"#af5249","Krispy Kreme":"#839134","Einstein Bros. Bagels":"#8060a1"};
-const palette = ["#72623c","#20847f","#a24c73","#8c6b9b","#617c43","#b16730","#637ba0","#975757","#44848b","#9a782f","#5b7694","#965283","#53866d","#936343","#727390","#677745","#9e6661","#407586","#805b78"];
-let nextColor = 0;
-for (const b of brands) if (!colors[b]) colors[b] = palette[nextColor++ % palette.length];
+const colors = {
+  "Starbucks": "#176648",
+  "McDonald's": "#FFC72C",
+  "Dunkin'": "#DA1884",
+  "Dutch Bros Coffee": "#2457A6",
+  "7 Brew Coffee": "#512A89",
+  "Scooter's Coffee": "#8F2419",
+  "Einstein Bros. Bagels": "#9973CC",
+  "Tim Hortons": "#E24B14",
+  "BIGGBY Coffee": "#AA5521",
+  "Caribou Coffee": "#548FC4",
+  "Krispy Kreme": "#523322",
+  "Peet's Coffee": "#28344F",
+  "Black Rock Coffee Bar": "#605DC2"
+};
+for (const brand of competitors) {
+  if (sizeGroup(byBrand.get(brand).length) === "Small") colors[brand] = "#626262";
+}
 const selected = new Set(brands);
 const get = id => document.getElementById(id);
 const format = n => n.toLocaleString("en-US");
