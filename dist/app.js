@@ -7,13 +7,19 @@ for (const row of rows) {
   byBrand.get(row[0]).push(row);
 }
 const brands = [...byBrand.keys()].sort((a,b) => byBrand.get(b).length - byBrand.get(a).length);
-const footprint = brand => new Set(byBrand.get(brand).map(row => row[5])).size;
+function sizeGroup(count) {
+  if (count >= 1500) return "Large";
+  if (count <= 200) return "Small";
+  return "Medium";
+}
+const competitors = brands.filter(brand => brand !== "Starbucks");
 const sections = [
   ["Reference company", ["Starbucks"]],
-  ["National competitors", brands.filter(b => b !== "Starbucks" && footprint(b) >= 25)],
-  ["Regional competitors", brands.filter(b => b !== "Starbucks" && footprint(b) < 25)]
+  ...["Large", "Medium", "Small"].map(size => [
+    size, competitors.filter(brand => sizeGroup(byBrand.get(brand).length) === size)
+  ])
 ];
-const colors = {"Starbucks":"#176648","Dunkin'":"#e67932","Dutch Bros Coffee":"#286d9e","7 Brew Coffee":"#ae4359","Scooter's Coffee":"#af5249","Krispy Kreme":"#839134","Einstein Bros. Bagels":"#8060a1"};
+const colors = {"McDonald's":"#FFC72C","Starbucks":"#176648","Dunkin'":"#e67932","Dutch Bros Coffee":"#286d9e","7 Brew Coffee":"#ae4359","Scooter's Coffee":"#af5249","Krispy Kreme":"#839134","Einstein Bros. Bagels":"#8060a1"};
 const palette = ["#72623c","#20847f","#a24c73","#8c6b9b","#617c43","#b16730","#637ba0","#975757","#44848b","#9a782f","#5b7694","#965283","#53866d","#936343","#727390","#677745","#9e6661","#407586","#805b78"];
 let nextColor = 0;
 for (const b of brands) if (!colors[b]) colors[b] = palette[nextColor++ % palette.length];
@@ -56,7 +62,7 @@ function renderGroups() {
 function updateMap() {
   const activeRows = rows.filter(r => selected.has(r[0]));
   window.atlasMap.setData(activeRows,colors);
-  get("map-sub").textContent = format(activeRows.length) + " locations · " + selected.size + (selected.size === 1 ? " company" : " companies");
+  get("map-sub").textContent = format(activeRows.length) + " locations Â· " + selected.size + (selected.size === 1 ? " company" : " companies");
   get("selected").textContent = selected.size + " of " + brands.length + " selected";
   get("toggleAll").textContent = selected.size === brands.length ? "Clear all" : "Select all";
 }
@@ -76,8 +82,8 @@ get("mobileLayers").onclick = () => {
 get("mobileLayers").setAttribute("aria-expanded","false");
 get("mobileLayers").setAttribute("aria-controls","sidebar");
 const details = get("details");
-details.append(make("p",format(rows.length) + " geocoded listings across " + brands.length + " coffee, doughnut, and bagel chains in the 50 states and Washington, DC. Store openings, closures, and licensed counters can differ from these directory snapshots."));
-details.append(make("h3","How companies are grouped"),make("p","National competitors have mapped stores in at least 25 states or DC. Regional competitors have a smaller mapped footprint. Starbucks has its own reference layer."));
+details.append(make("p",format(rows.length) + " geocoded listings across " + brands.length + " coffee and restaurant chains in the 50 states and Washington, DC. Store openings, closures, and licensed counters can differ from these directory snapshots."));
+details.append(make("h3","How companies are grouped"),make("p","Groups use mapped U.S. store counts. Large chains have 1,500 or more stores, Medium chains have 201–1,499, and Small chains have 200 or fewer. Starbucks has its own reference layer."));
 details.append(make("h3","Store directories"));
 const list = make("ul");
 for (const brand of brands) {
@@ -85,7 +91,7 @@ for (const brand of brands) {
   const item = make("li");
   const link = make("a",brand);
   link.href = s.url; link.target = "_blank"; link.rel = "noopener";
-  item.append(link,document.createTextNode(" · " + s.label + " · " + s.date));
+  item.append(link,document.createTextNode(" Â· " + s.label + " Â· " + s.date));
   list.append(item);
 }
 details.append(list,make("h3","Map geography"),make("p","State boundaries from the U.S. Census Bureau. Surrounding geography from Natural Earth. Alaska and Hawaii are shown as insets."));
