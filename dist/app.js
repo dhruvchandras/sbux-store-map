@@ -37,7 +37,7 @@ const colors = {
 for (const brand of competitors) {
   if (sizeGroup(byBrand.get(brand).length) === "Small") colors[brand] = "#626262";
 }
-const selected = new Set(brands);
+const selected = new Set(brands.filter(brand => brand === "Starbucks" || sizeGroup(byBrand.get(brand).length) === "Large"));
 const get = id => document.getElementById(id);
 const format = n => n.toLocaleString("en-US");
 function make(tag, content, className) {
