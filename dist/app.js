@@ -48,6 +48,7 @@ function make(tag, content, className) {
 }
 function renderGroups() {
   const groups = get("groups");
+  companyCard.close();
   groups.replaceChildren();
   const query = get("search").value.toLowerCase().trim();
   for (const [title, list] of sections) {
@@ -76,7 +77,7 @@ function renderGroups() {
         for (const brand of list) {
           if (show) selected.add(brand); else selected.delete(brand);
         }
-        for (const button of group.querySelectorAll(".brand")) {
+        for (const button of group.querySelectorAll(".layer-switch")) {
           button.setAttribute("aria-checked",show);
         }
         syncGroupToggle();
@@ -84,19 +85,22 @@ function renderGroups() {
       };
     }
     for (const brand of matching) {
-      const button = make("button",null,"brand");
+      const row = make("div",null,"brand");
+      row.style.setProperty("--ink",colors[brand]);
+      const profile = companyCard.trigger(brand,byBrand.get(brand).length);
+      const button = make("button",null,"layer-switch");
       button.setAttribute("role","switch");
       button.setAttribute("aria-label",brand);
       button.setAttribute("aria-checked",selected.has(brand));
-      button.style.setProperty("--ink",colors[brand]);
-      button.append(make("span",null,"swatch"),make("strong",brand),make("span",format(byBrand.get(brand).length),"count"),make("span",null,"switch"));
+      button.append(make("span",format(byBrand.get(brand).length),"count"),make("span",null,"switch"));
       button.onclick = () => {
         if (selected.has(brand)) selected.delete(brand); else selected.add(brand);
         button.setAttribute("aria-checked",selected.has(brand));
         syncGroupToggle();
         updateMap();
       };
-      group.append(button);
+      row.append(make("span",null,"swatch"),profile,button);
+      group.append(row);
     }
     groups.append(group);
   }
